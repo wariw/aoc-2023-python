@@ -3,6 +3,7 @@ import day_2
 import day_3
 import day_4
 import day_5
+import day_6
 
 
 if __name__ == "__main__":
@@ -16,3 +17,5 @@ if __name__ == "__main__":
     print("Day 4.2", day_4.part_2())
     print("Day 5.1", day_5.part_1())
     print("Day 5.2", day_5.part_2())
+    print("Day 6.1", day_6.part_1())
+    print("Day 6.2", day_6.part_2())

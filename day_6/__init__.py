@@ -9,7 +9,7 @@ def find_solutions(time: int, distance: int) -> list[int]:
         list[int]: List of button hold times [ms].
 
     """
-    return [hold for hold in range(time) if hold * (time - hold)]
+    return [hold for hold in range(time) if hold * (time - hold) > distance]
 
 
 def part_1() -> int:

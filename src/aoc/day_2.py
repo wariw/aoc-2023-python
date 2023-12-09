@@ -20,6 +20,8 @@ def parse_cube(cube_data: str) -> tuple[Cube, int]:
             cube_type = Cube.GREEN
         case "blue":
             cube_type = Cube.BLUE
+        case _:
+            raise ValueError
 
     return cube_type, int(count)
 
@@ -39,9 +41,9 @@ def parse_game(game_data: str) -> list[dict[Cube, int]]:
 
 
 def parse_games(games_data: str) -> dict[int, list[dict[Cube, int]]]:
-    games_data = games_data.splitlines()
+    games_data_lines = games_data.splitlines()
     games = {}
-    for game_data in games_data:
+    for game_data in games_data_lines:
         game_id, data = re.findall(r"Game (\d+): (.*)", game_data)[0]
         parsed_game_data = parse_game(data)
         games[int(game_id)] = parsed_game_data
@@ -49,7 +51,7 @@ def parse_games(games_data: str) -> dict[int, list[dict[Cube, int]]]:
     return games
 
 
-def maximum_cubes(game_data: list[dict[Cube, int]]) -> dict[Cube, int]:
+def maximum_cubes(game_data: list[dict[Cube, int]]) -> tuple[int, int, int]:
     red_count = 0
     green_count = 0
     blue_count = 0

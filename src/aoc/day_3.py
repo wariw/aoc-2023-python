@@ -26,7 +26,7 @@ class CordinateObject:
 
 def parse_numbers(parts_map: str) -> set[CordinateObject]:
     map_rows = parts_map.splitlines()
-    cordinates = []
+    cordinates: set[CordinateObject] = set()
     for row_index, map_row in enumerate(map_rows):
         for match in re.finditer(r"(\d+)", map_row):
             cordinate = CordinateObject(
@@ -34,14 +34,14 @@ def parse_numbers(parts_map: str) -> set[CordinateObject]:
                 Cordinate(row_index, match.start()),
                 match.end() - match.start(),
             )
-            cordinates.append(cordinate)
+            cordinates.add(cordinate)
 
     return cordinates
 
 
 def parse_symbols(parts_map: str) -> set[CordinateObject]:
     map_rows = parts_map.splitlines()
-    cordinates = []
+    cordinates = set()
     for row_index, map_row in enumerate(map_rows):
         for match in re.finditer(r"(?!\.)\W", map_row):
             cordinate = CordinateObject(
@@ -49,7 +49,7 @@ def parse_symbols(parts_map: str) -> set[CordinateObject]:
                 Cordinate(row_index, match.start()),
                 match.end() - match.start(),
             )
-            cordinates.append(cordinate)
+            cordinates.add(cordinate)
 
     return cordinates
 
@@ -65,7 +65,7 @@ def get_adjacent_cordinates(cordinate: Cordinate) -> set[Cordinate]:
     return set(adjacent)
 
 
-def get_part_number_cordinates(symbols: list[CordinateObject]):
+def get_part_number_cordinates(symbols: set[CordinateObject]):
     number_cordinates: set[Cordinate] = set()
     for symbol in symbols:
         adjacent = get_adjacent_cordinates(symbol.start)
@@ -92,7 +92,7 @@ class Day3(Aoc):
 
             parts_sum = 0
             for part in parts:
-                parts_sum += part.value
+                parts_sum += int(part.value)
 
             return parts_sum
 

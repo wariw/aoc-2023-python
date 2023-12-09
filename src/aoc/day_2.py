@@ -1,6 +1,7 @@
 import re
-
 from enum import Enum, auto
+
+from ._common import Aoc
 
 
 class Cube(Enum):
@@ -64,46 +65,40 @@ def maximum_cubes(game_data: list[dict[Cube, int]]) -> dict[Cube, int]:
     return red_count, green_count, blue_count
 
 
-def part_1() -> int:
-    id_sum = 0
-    with open("day_2/input.txt", "rt") as file:
-        content = file.read()
-        games = parse_games(content)
+class Day2(Aoc):
+    def part_1(self) -> int:
+        id_sum = 0
+        with self.open_input() as file:
+            content = file.read()
+            games = parse_games(content)
 
-        possible_cubes = {
-            Cube.RED: 12,
-            Cube.GREEN: 13,
-            Cube.BLUE: 14,
-        }
+            possible_cubes = {
+                Cube.RED: 12,
+                Cube.GREEN: 13,
+                Cube.BLUE: 14,
+            }
 
-        for index, game in games.items():
-            red_count, green_count, blue_count = maximum_cubes(game)
+            for index, game in games.items():
+                red_count, green_count, blue_count = maximum_cubes(game)
 
-            if (
-                red_count <= possible_cubes[Cube.RED]
-                and green_count <= possible_cubes[Cube.GREEN]
-                and blue_count <= possible_cubes[Cube.BLUE]
-            ):
-                id_sum += index
+                if (
+                    red_count <= possible_cubes[Cube.RED]
+                    and green_count <= possible_cubes[Cube.GREEN]
+                    and blue_count <= possible_cubes[Cube.BLUE]
+                ):
+                    id_sum += index
 
-    return id_sum
+        return id_sum
 
+    def part_2(self) -> int:
+        power_sum = 0
+        with self.open_input() as file:
+            content = file.read()
+            games = parse_games(content)
 
-def part_2() -> int:
-    power_sum = 0
-    with open("day_2/input.txt", "rt") as file:
-        content = file.read()
-        games = parse_games(content)
+            for game in games.values():
+                red_count, green_count, blue_count = maximum_cubes(game)
+                power = red_count * green_count * blue_count
+                power_sum += power
 
-        for game in games.values():
-            red_count, green_count, blue_count = maximum_cubes(game)
-            power = red_count * green_count * blue_count
-            power_sum += power
-
-
-    return power_sum
-
-
-if __name__ == "__main__":
-    print(part_1())
-    print(part_2())
+        return power_sum

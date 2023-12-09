@@ -1,0 +1,9 @@
+[project]
+name = "aoc_2023"
+version = "0.0.1"
+description = "Solutions for AoC 2023."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
+pythonpath = "src"

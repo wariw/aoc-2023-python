@@ -4,6 +4,8 @@ from functools import partial
 from itertools import islice
 from typing import Iterable
 
+from ._common import Aoc
+
 
 @dataclass
 class Map:
@@ -127,43 +129,39 @@ def parse_seed_ranges(seed_ranges: list[range], mapping_list: list[list[Map]]):
     return parsed_ranges
 
 
-def part_1() -> int:
-    with open("day_5/input.txt", "rt") as file:
-        content = file.read()
+class Day5(Aoc):
+    def part_1(self) -> int:
+        with self.open_input() as file:
+            content = file.read()
 
-        groups = content.split("\n\n")
+            groups = content.split("\n\n")
 
-        seeds_ids = [int(seed) for seed in groups[0][7:].split()]
-        mappings_dict = parse_mappings(groups[1:])
+            seeds_ids = [int(seed) for seed in groups[0][7:].split()]
+            mappings_dict = parse_mappings(groups[1:])
 
-        locations = find_locations(seeds_ids, list(mappings_dict.values()))
+            locations = find_locations(seeds_ids, list(mappings_dict.values()))
 
-        return min(locations)
+            return min(locations)
 
+    def part_2(self) -> int:
+        with self.open_input() as file:
+            content = file.read()
 
-def part_2() -> int:
-    with open("day_5/input.txt", "rt") as file:
-        content = file.read()
+            groups = content.split("\n\n")
 
-        groups = content.split("\n\n")
+            seeds_id_ranges = [int(seed) for seed in groups[0][7:].split()]
+            mappings_dict = parse_mappings(groups[1:])
 
-        seeds_id_ranges = [int(seed) for seed in groups[0][7:].split()]
-        mappings_dict = parse_mappings(groups[1:])
+            seed_groups = iter(
+                partial(lambda it: tuple(islice(it, 2)), iter(seeds_id_ranges)), ()
+            )  # Splits list into 2 value sublists.
+            seed_ranges = [
+                range(seed_group[0], seed_group[0] + seed_group[1])
+                for seed_group in seed_groups
+            ]
 
-        seed_groups = iter(
-            partial(lambda it: tuple(islice(it, 2)), iter(seeds_id_ranges)), ()
-        )  # Splits list into 2 value sublists.
-        seed_ranges = [
-            range(seed_group[0], seed_group[0] + seed_group[1])
-            for seed_group in seed_groups
-        ]
+            parsed_ranges = parse_seed_ranges(seed_ranges, list(mappings_dict.values()))
 
-        parsed_ranges = parse_seed_ranges(seed_ranges, list(mappings_dict.values()))
+            location = min(location_range.start for location_range in parsed_ranges)
 
-        location = min(location_range.start for location_range in parsed_ranges)
-        return location
-
-
-if __name__ == "__main__":
-    print(part_1())
-    print(part_2())
+            return location

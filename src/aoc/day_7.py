@@ -4,6 +4,8 @@ from enum import Enum, IntEnum
 from operator import itemgetter
 from typing import cast, Iterable, Self
 
+from ._common import Aoc
+
 
 class Card(IntEnum):
     ACE = 14
@@ -167,56 +169,51 @@ class Hand:
         return hand_type
 
 
-def part_1() -> int:
-    with open("day_7/input.txt", "rt") as file:
-        lines = file.read().splitlines()
+class Day7(Aoc):
+    def part_1(self) -> int:
+        with self.open_input() as file:
+            lines = file.read().splitlines()
 
-        hands = []
+            hands = []
 
-        for line in lines:
-            cards_string, bid = line.split()
+            for line in lines:
+                cards_string, bid = line.split()
 
-            cards = parse_cards(cards_string)
-            cards = cast(TypeHand, cards)
-            hand = Hand(cards)
-            hands.append((int(bid), hand))
+                cards = parse_cards(cards_string)
+                cards = cast(TypeHand, cards)
+                hand = Hand(cards)
+                hands.append((int(bid), hand))
 
-        sorted_hands = sorted(hands, key=itemgetter(1))
+            sorted_hands = sorted(hands, key=itemgetter(1))
 
-        winning_sum = 0
+            winning_sum = 0
 
-        for index, sorted_hand in enumerate(sorted_hands):
-            hand_win = (index + 1) * sorted_hand[0]
-            winning_sum += hand_win
+            for index, sorted_hand in enumerate(sorted_hands):
+                hand_win = (index + 1) * sorted_hand[0]
+                winning_sum += hand_win
 
-    return winning_sum
+        return winning_sum
 
+    def part_2(self) -> int:
+        with self.open_input() as file:
+            lines = file.read().splitlines()
 
-def part_2() -> int:
-    with open("day_7/input.txt", "rt") as file:
-        lines = file.read().splitlines()
+            hands = []
 
-        hands = []
+            for line in lines:
+                cards_string, bid = line.split()
 
-        for line in lines:
-            cards_string, bid = line.split()
+                cards = parse_cards(cards_string, jokers=True)
+                cards = cast(TypeHand, cards)
+                hand = Hand(cards)
+                hands.append((int(bid), hand))
 
-            cards = parse_cards(cards_string, jokers=True)
-            cards = cast(TypeHand, cards)
-            hand = Hand(cards)
-            hands.append((int(bid), hand))
+            sorted_hands = sorted(hands, key=itemgetter(1))
 
-        sorted_hands = sorted(hands, key=itemgetter(1))
+            winning_sum = 0
 
-        winning_sum = 0
+            for index, sorted_hand in enumerate(sorted_hands):
+                hand_win = (index + 1) * sorted_hand[0]
+                winning_sum += hand_win
 
-        for index, sorted_hand in enumerate(sorted_hands):
-            hand_win = (index + 1) * sorted_hand[0]
-            winning_sum += hand_win
-
-    return winning_sum
-
-
-if __name__ == "__main__":
-    print(part_1())
-    print(part_2())
+        return winning_sum

@@ -1,6 +1,8 @@
 import re
 from dataclasses import dataclass
 
+from ._common import Aoc
+
 
 @dataclass(frozen=True, eq=True)
 class Cordinate:
@@ -72,54 +74,49 @@ def get_part_number_cordinates(symbols: list[CordinateObject]):
     return number_cordinates
 
 
-def part_1() -> int:
-    with open("day_3/input.txt", "rt") as file:
-        content = file.read()
-        numbers = parse_numbers(content)
-        symbols = parse_symbols(content)
+class Day3(Aoc):
+    def part_1(self) -> int:
+        with self.open_input() as file:
+            content = file.read()
+            numbers = parse_numbers(content)
+            symbols = parse_symbols(content)
 
-        part_cordinates = get_part_number_cordinates(symbols)
+            part_cordinates = get_part_number_cordinates(symbols)
 
-        parts: set[CordinateObject] = set()
+            parts: set[CordinateObject] = set()
 
-        for part in numbers:
-            for cordinate in part.indices:
-                if cordinate in part_cordinates:
-                    parts.add(part)
+            for part in numbers:
+                for cordinate in part.indices:
+                    if cordinate in part_cordinates:
+                        parts.add(part)
 
-        parts_sum = 0
-        for part in parts:
-            parts_sum += part.value
+            parts_sum = 0
+            for part in parts:
+                parts_sum += part.value
 
-        return parts_sum
+            return parts_sum
 
+    def part_2(self) -> int:
+        with self.open_input() as file:
+            content = file.read()
+            numbers = parse_numbers(content)
+            symbols = parse_symbols(content)
 
-def part_2() -> int:
-    with open("day_3/input.txt", "rt") as file:
-        content = file.read()
-        numbers = parse_numbers(content)
-        symbols = parse_symbols(content)
+            ratios_sum = 0
+            for symbol in symbols:
+                adjacent = get_adjacent_cordinates(symbol.start)
 
-        ratios_sum = 0
-        for symbol in symbols:
-            adjacent = get_adjacent_cordinates(symbol.start)
+                adjacent_numbers = set()
+                for number in numbers:
+                    for indice in number.indices:
+                        if indice in adjacent:
+                            adjacent_numbers.add(number)
 
-            adjacent_numbers = set()
-            for number in numbers:
-                for indice in number.indices:
-                    if indice in adjacent:
-                        adjacent_numbers.add(number)
+                if len(adjacent_numbers) == 2:
+                    adjacent_numbers_list = list(adjacent_numbers)
+                    gear_ratio = (
+                        adjacent_numbers_list[0].value * adjacent_numbers_list[1].value
+                    )
+                    ratios_sum += gear_ratio
 
-            if len(adjacent_numbers) == 2:
-                adjacent_numbers_list = list(adjacent_numbers)
-                gear_ratio = (
-                    adjacent_numbers_list[0].value * adjacent_numbers_list[1].value
-                )
-                ratios_sum += gear_ratio
-
-        return ratios_sum
-
-
-if __name__ == "__main__":
-    print(part_1())
-    print(part_2())
+            return ratios_sum

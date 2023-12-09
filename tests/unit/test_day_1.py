@@ -1,6 +1,6 @@
 from pytest import mark
 
-from day_1 import decode_cordinate, decode_cordinate_textual
+from aoc.day_1._tools import decode_cordinate, decode_cordinate_textual
 
 
 @mark.parametrize(

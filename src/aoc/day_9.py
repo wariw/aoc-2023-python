@@ -1,18 +1,9 @@
 from ._common import Aoc
 
 
-def generate_diffs(data: list[int]) -> list[int]:
-    diffs = []
-    for index in range(len(data) - 1):
-        diff = data[index + 1] - data[index]
-        diffs.append(diff)
-
-    return diffs
-
-
 class Day9(Aoc):
     def part_1(self):
-        with open(self._input_file) as file:
+        with self.open_input() as file:
             lines = file.read().splitlines()
 
             history_sets = []
@@ -60,3 +51,12 @@ class Day9(Aoc):
                 interpolated_sum += vals[-1]
 
         return interpolated_sum
+
+
+def generate_diffs(data: list[int]) -> list[int]:
+    diffs = []
+    for index in range(len(data) - 1):
+        diff = data[index + 1] - data[index]
+        diffs.append(diff)
+
+    return diffs

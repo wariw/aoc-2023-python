@@ -7,6 +7,8 @@ from .tools.cordinates import Cordinate, get_adjacent_cordinates
 
 
 class Direction(Enum):
+    """Direction diff values."""
+
     UP = Cordinate(-1, 0)
     DOWN = Cordinate(1, 0)
     LEFT = Cordinate(0, -1)
@@ -59,7 +61,7 @@ class Traveler:
         current_symbol = self._maze_map_rows[self._current.row][self._current.position]
 
         possible_directions = list(cordinates_map[current_symbol])
-        
+
         previous_direction = Direction(self._previous - self._current)
         possible_directions.remove(previous_direction)
 
@@ -68,33 +70,6 @@ class Traveler:
         self._previous = self._current
         self._current += next_direction.value
         self._steps += 1
-
-
-def _find_start(maze_map_rows: list[str]) -> Cordinate:
-    for row, line in enumerate(maze_map_rows):
-        start = re.search(r"S", line)
-        if start:
-            start_cordinate = Cordinate(row, start.start())
-
-            return start_cordinate
-
-    raise ValueError("No start provided in input.")
-
-
-def _find_starting_cordinates(
-    maze_map_rows: list[str], start_cordinate: Cordinate, possible_paths: set[Cordinate]
-) -> list[Cordinate]:
-    starting_cordinates = []
-    for possible_path in possible_paths:
-        direction = Direction(possible_path - start_cordinate)
-
-        if (
-            maze_map_rows[possible_path.row][possible_path.position]
-            in directions_map[direction]
-        ):
-            starting_cordinates.append(possible_path)
-
-    return starting_cordinates
 
 
 class Day10(Aoc):
@@ -157,6 +132,8 @@ class Day10(Aoc):
                     current_cordinate = Cordinate(row, position)
 
                     if current_cordinate in positions:
+                        # Maze side is changed based on bends and | changes.
+                        # Two bends in different direction mean side is changed.
                         match char:
                             case "|":
                                 inside = not inside
@@ -176,3 +153,30 @@ class Day10(Aoc):
                             inside_objects += 1
 
         return inside_objects
+
+
+def _find_start(maze_map_rows: list[str]) -> Cordinate:
+    for row, line in enumerate(maze_map_rows):
+        start = re.search(r"S", line)
+        if start:
+            start_cordinate = Cordinate(row, start.start())
+
+            return start_cordinate
+
+    raise ValueError("No start provided in input.")
+
+
+def _find_starting_cordinates(
+    maze_map_rows: list[str], start_cordinate: Cordinate, possible_paths: set[Cordinate]
+) -> list[Cordinate]:
+    starting_cordinates = []
+    for possible_path in possible_paths:
+        direction = Direction(possible_path - start_cordinate)
+
+        if (
+            maze_map_rows[possible_path.row][possible_path.position]
+            in directions_map[direction]
+        ):
+            starting_cordinates.append(possible_path)
+
+    return starting_cordinates

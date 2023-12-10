@@ -1,3 +1,5 @@
+"""Helpers for cordinate based tasks."""
+
 from dataclasses import dataclass
 from typing import Self
 
@@ -9,11 +11,11 @@ class Cordinate:
     row: int
     position: int
 
-    def __add__(self, other: Self) -> Self:
-        return Cordinate(self.row + other.row, self.position + other.position)
+    def __add__(self, __value: Self) -> Self:
+        return Cordinate(self.row + __value.row, self.position + __value.position)
 
-    def __sub__(self, other: Self) -> Self:
-        return Cordinate(self.row - other.row, self.position - other.position)
+    def __sub__(self, __value: Self) -> Self:
+        return Cordinate(self.row - __value.row, self.position - __value.position)
 
     def __eq__(self, __value: Self) -> bool:
         return self.row == __value.row and self.position == __value.position

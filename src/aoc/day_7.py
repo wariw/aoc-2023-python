@@ -8,6 +8,8 @@ from ._common import Aoc
 
 
 class Card(IntEnum):
+    "Card type."
+
     ACE = 14
     KING = 13
     QUEEN = 12
@@ -28,6 +30,8 @@ TypeHand = tuple[Card, Card, Card, Card, Card]
 
 
 class HandType(Enum):
+    """Type of hand."""
+
     POKER = 6
     FOUR = 5
     FULL_HOUSE = 4
@@ -37,7 +41,110 @@ class HandType(Enum):
     HIGH_CARD = 0
 
 
-def parse_card(card: str, jokers: bool = False):
+@dataclass
+class Hand:
+    """Represents hand of cards."""
+
+    cards: TypeHand
+
+    def __eq__(self, other: Self):
+        if self.hand_type.value == other.hand_type.value:
+            for index, card in enumerate(self.cards):
+                if other.cards[index].value != card.value:
+                    return False
+
+            return True
+
+        return False
+
+    def __lt__(self, other: Self):
+        if self.hand_type.value == other.hand_type.value:
+            for index, card in enumerate(self.cards):
+                card_value = card.value
+                other_value = other.cards[index].value
+                if card_value != other_value:
+                    return card_value < other_value
+
+            return False
+
+        return self.hand_type.value < other.hand_type.value
+
+    def __repr__(self) -> str:
+        return "".join(repr(self.cards))
+
+    @property
+    def hand_type(self) -> HandType:
+        """Type of hand."""
+        cards = self.cards
+        if Card.JOKER in self.cards:
+            cards = replace_jokers(cards)
+
+        hand_type = find_hand_type(cards)
+
+        return hand_type
+
+
+class Day7(Aoc):
+    def part_1(self) -> int:
+        with self.open_input() as file:
+            lines = file.read().splitlines()
+
+            hands = []
+
+            for line in lines:
+                cards_string, bid = line.split()
+
+                cards = _parse_cards(cards_string)
+                cards = cast(TypeHand, cards)
+                hand = Hand(cards)
+                hands.append((int(bid), hand))
+
+            sorted_hands = sorted(hands, key=itemgetter(1))
+
+            winning_sum = 0
+
+            for index, sorted_hand in enumerate(sorted_hands):
+                hand_win = (index + 1) * sorted_hand[0]
+                winning_sum += hand_win
+
+        return winning_sum
+
+    def part_2(self) -> int:
+        with self.open_input() as file:
+            lines = file.read().splitlines()
+
+            hands = []
+
+            for line in lines:
+                cards_string, bid = line.split()
+
+                cards = _parse_cards(cards_string, jokers=True)
+                cards = cast(TypeHand, cards)
+                hand = Hand(cards)
+                hands.append((int(bid), hand))
+
+            sorted_hands = sorted(hands, key=itemgetter(1))
+
+            winning_sum = 0
+
+            for index, sorted_hand in enumerate(sorted_hands):
+                hand_win = (index + 1) * sorted_hand[0]
+                winning_sum += hand_win
+
+        return winning_sum
+
+
+def parse_card(card: str, jokers: bool = False) -> Card:
+    """Parses card symbol into Card enum.
+
+    Args:
+        card (str): Symbol of card.
+        jokers (bool, optional): Decides if 'J' should be parsed as Jocker. Defaults to False.
+
+    Returns:
+        Card: Card enum.
+    """
+
     try:
         card_val = int(card[0])
         return Card(card_val)
@@ -57,11 +164,19 @@ def parse_card(card: str, jokers: bool = False):
                 raise
 
 
-def parse_cards(cards: str, jokers: bool = False) -> tuple[Card, ...]:
-    return tuple(parse_card(card, jokers) for card in [*cards])
-
-
 def find_hand_type(cards: Iterable[Card]) -> HandType:
+    """Finds type of hand.
+
+    Args:
+        cards (Iterable[Card]): Cards in hand.
+
+    Raises:
+        ValueError: In case of unparsable hand type.
+
+    Returns:
+        HandType: Type of hand.
+
+    """
     card_counts = Counter(cards)
     duplicates = [value for value in card_counts.values() if value > 1]
     parsing_error = ValueError("Unparsable Hand")
@@ -88,6 +203,18 @@ def find_hand_type(cards: Iterable[Card]) -> HandType:
 
 
 def replace_jokers(cards: Iterable[Card]) -> tuple[Card, ...]:
+    """Replace jokers in hand with cards providing highest hand type.
+
+    Args:
+        cards (Iterable[Card]): Cards to parse.
+
+    Raises:
+        ValueError: In case of unparsable hand.
+
+    Returns:
+        tuple[Card, ...]: Cards with jokers replaced.
+
+    """
     jokerless = list(filter(lambda card: card != Card.JOKER, cards))
     hand_type = find_hand_type(jokerless)
 
@@ -129,91 +256,5 @@ def replace_jokers(cards: Iterable[Card]) -> tuple[Card, ...]:
         return (Card.ACE, Card.ACE, Card.ACE, Card.ACE, Card.ACE)
 
 
-@dataclass
-class Hand:
-    cards: TypeHand
-
-    def __eq__(self, other: Self):
-        if self.hand_type.value == other.hand_type.value:
-            for index, card in enumerate(self.cards):
-                if other.cards[index].value != card.value:
-                    return False
-
-            return True
-
-        return False
-
-    def __lt__(self, other: Self):
-        if self.hand_type.value == other.hand_type.value:
-            for index, card in enumerate(self.cards):
-                card_value = card.value
-                other_value = other.cards[index].value
-                if card_value != other_value:
-                    return card_value < other_value
-
-            return False
-
-        return self.hand_type.value < other.hand_type.value
-
-    def __repr__(self) -> str:
-        return "".join(repr(self.cards))
-
-    @property
-    def hand_type(self) -> HandType:
-        cards = self.cards
-        if Card.JOKER in self.cards:
-            cards = replace_jokers(cards)
-
-        hand_type = find_hand_type(cards)
-
-        return hand_type
-
-
-class Day7(Aoc):
-    def part_1(self) -> int:
-        with self.open_input() as file:
-            lines = file.read().splitlines()
-
-            hands = []
-
-            for line in lines:
-                cards_string, bid = line.split()
-
-                cards = parse_cards(cards_string)
-                cards = cast(TypeHand, cards)
-                hand = Hand(cards)
-                hands.append((int(bid), hand))
-
-            sorted_hands = sorted(hands, key=itemgetter(1))
-
-            winning_sum = 0
-
-            for index, sorted_hand in enumerate(sorted_hands):
-                hand_win = (index + 1) * sorted_hand[0]
-                winning_sum += hand_win
-
-        return winning_sum
-
-    def part_2(self) -> int:
-        with self.open_input() as file:
-            lines = file.read().splitlines()
-
-            hands = []
-
-            for line in lines:
-                cards_string, bid = line.split()
-
-                cards = parse_cards(cards_string, jokers=True)
-                cards = cast(TypeHand, cards)
-                hand = Hand(cards)
-                hands.append((int(bid), hand))
-
-            sorted_hands = sorted(hands, key=itemgetter(1))
-
-            winning_sum = 0
-
-            for index, sorted_hand in enumerate(sorted_hands):
-                hand_win = (index + 1) * sorted_hand[0]
-                winning_sum += hand_win
-
-        return winning_sum
+def _parse_cards(cards: str, jokers: bool = False) -> tuple[Card, ...]:
+    return tuple(parse_card(card, jokers) for card in [*cards])

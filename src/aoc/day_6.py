@@ -1,20 +1,6 @@
 from ._common import Aoc
 
 
-def find_solutions(time: int, distance: int) -> list[int]:
-    """Finds solutions how to win races for specified parameters.
-
-    Args:
-        time (int): Total race time [ms].
-        distance (int): Top distance [mm].
-
-    Returns:
-        list[int]: List of button hold times [ms].
-
-    """
-    return [hold for hold in range(time) if hold * (time - hold) > distance]
-
-
 class Day6(Aoc):
     def part_1(self) -> int:
         with self.open_input() as file:
@@ -43,3 +29,17 @@ class Day6(Aoc):
             solutions = find_solutions(time, distance)
 
             return len(solutions)
+
+
+def find_solutions(time: int, distance: int) -> list[int]:
+    """Finds solutions how to win races for specified parameters.
+
+    Args:
+        time (int): Total race time [ms].
+        distance (int): Top distance [mm].
+
+    Returns:
+        list[int]: List of button hold times [ms].
+
+    """
+    return [hold for hold in range(time) if hold * (time - hold) > distance]

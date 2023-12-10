@@ -2,14 +2,7 @@ import re
 from dataclasses import dataclass
 
 from ._common import Aoc
-
-
-@dataclass(frozen=True, eq=True)
-class Cordinate:
-    """Single cordinate."""
-
-    row: int
-    position: int
+from .tools.cordinates import Cordinate, get_adjacent_cordinates
 
 
 @dataclass(frozen=True, eq=True)
@@ -58,17 +51,6 @@ def parse_objects(parts_map: str) -> tuple[set[CordinateObject], set[CordinateOb
                 symbols.add(cordinate)
 
     return numbers, symbols
-
-
-def get_adjacent_cordinates(cordinate: Cordinate) -> set[Cordinate]:
-    """Returns cordinates adjacent to specified cordinate."""
-
-    return set(
-        Cordinate(cordinate.row + i, cordinate.position + j)
-        for i in (-1, 0, 1)
-        for j in (-1, 0, 1)
-        if i != 0 or j != 0
-    )
 
 
 class Day3(Aoc):

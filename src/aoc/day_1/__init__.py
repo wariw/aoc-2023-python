@@ -1,5 +1,5 @@
 from aoc._common import Aoc
-from ._tools import decode_cordinate, decode_cordinate_textual
+from ._tools import decode_cordinate
 
 
 class Day1(Aoc):
@@ -17,6 +17,6 @@ class Day1(Aoc):
             lines = file.read().splitlines()
             cordinate_sum = 0
             for line in lines:
-                cordinate_sum += decode_cordinate_textual(line)
+                cordinate_sum += decode_cordinate(line, parse_text=True)
 
             return cordinate_sum

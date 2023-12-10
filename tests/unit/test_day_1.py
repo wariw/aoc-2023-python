@@ -1,6 +1,6 @@
 from pytest import mark
 
-from aoc.day_1._tools import decode_cordinate, decode_cordinate_textual
+from aoc.day_1._tools import decode_cordinate
 
 
 @mark.parametrize(
@@ -29,4 +29,4 @@ def test_decode_cordinate(encoded_cordinate, decoded_cordinate):
     ),
 )
 def test_decode_cordinate_textual(encoded_cordinate, decoded_cordinate):
-    assert decode_cordinate_textual(encoded_cordinate) == decoded_cordinate
+    assert decode_cordinate(encoded_cordinate, parse_text=True) == decoded_cordinate

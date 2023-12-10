@@ -6,116 +6,114 @@ from ._common import Aoc
 
 @dataclass(frozen=True, eq=True)
 class Cordinate:
+    """Single cordinate."""
+
     row: int
     position: int
 
 
 @dataclass(frozen=True, eq=True)
 class CordinateObject:
-    value: int | str
+    """Cordinated object."""
+
+    value: str
     start: Cordinate
     span: int
 
     @property
     def indices(self) -> list[Cordinate]:
+        """Indices occupied by object."""
+
         return [
             Cordinate(self.start.row, self.start.position + index)
             for index in range(self.span)
         ]
 
 
-def parse_numbers(parts_map: str) -> set[CordinateObject]:
+def parse_objects(parts_map: str) -> tuple[set[CordinateObject], set[CordinateObject]]:
+    """Parses cordinate objects (numbers and symbols) from provided map.
+
+    Args:
+        parts_map (str): Multiline string providing cordinat map.
+
+    Returns:
+        tuple[set[CordinateObject], set[CordinateObject]]: Tuple containing sets of number na symbol cordinates.
+
+    """
     map_rows = parts_map.splitlines()
-    cordinates: set[CordinateObject] = set()
+    numbers = set()
+    symbols = set()
+
     for row_index, map_row in enumerate(map_rows):
-        for match in re.finditer(r"(\d+)", map_row):
-            cordinate = CordinateObject(
-                int(match.group()),
-                Cordinate(row_index, match.start()),
-                match.end() - match.start(),
-            )
-            cordinates.add(cordinate)
-
-    return cordinates
-
-
-def parse_symbols(parts_map: str) -> set[CordinateObject]:
-    map_rows = parts_map.splitlines()
-    cordinates = set()
-    for row_index, map_row in enumerate(map_rows):
-        for match in re.finditer(r"(?!\.)\W", map_row):
+        for match in re.finditer(r"(?!\.)\W|\d+", map_row):
             cordinate = CordinateObject(
                 match.group(),
                 Cordinate(row_index, match.start()),
                 match.end() - match.start(),
             )
-            cordinates.add(cordinate)
+            try:
+                int(match.group())
+                numbers.add(cordinate)
+            except ValueError:
+                symbols.add(cordinate)
 
-    return cordinates
+    return numbers, symbols
 
 
 def get_adjacent_cordinates(cordinate: Cordinate) -> set[Cordinate]:
-    adjacent = [
+    """Returns cordinates adjacent to specified cordinate."""
+
+    return set(
         Cordinate(cordinate.row + i, cordinate.position + j)
         for i in (-1, 0, 1)
         for j in (-1, 0, 1)
         if i != 0 or j != 0
-    ]
-
-    return set(adjacent)
-
-
-def get_part_number_cordinates(symbols: set[CordinateObject]):
-    number_cordinates: set[Cordinate] = set()
-    for symbol in symbols:
-        adjacent = get_adjacent_cordinates(symbol.start)
-        number_cordinates.update(adjacent)
-
-    return number_cordinates
+    )
 
 
 class Day3(Aoc):
     def part_1(self) -> int:
         with self.open_input() as file:
             content = file.read()
-            numbers = parse_numbers(content)
-            symbols = parse_symbols(content)
+            numbers, symbols = parse_objects(content)
 
-            part_cordinates = get_part_number_cordinates(symbols)
+            symbol_cordinates = set(
+                cordinates
+                for symbol in symbols
+                for cordinates in get_adjacent_cordinates(symbol.start)
+            )  # Get cordinates adjacent to symbols
 
-            parts: set[CordinateObject] = set()
+            part_numbers = set(
+                number
+                for number in numbers
+                for cordinate in number.indices
+                if cordinate in symbol_cordinates
+            )  # Select numbers adjacent to symbols
 
-            for part in numbers:
-                for cordinate in part.indices:
-                    if cordinate in part_cordinates:
-                        parts.add(part)
+            part_numbers_sum = sum(int(part.value) for part in part_numbers)
 
-            parts_sum = 0
-            for part in parts:
-                parts_sum += int(part.value)
-
-            return parts_sum
+            return part_numbers_sum
 
     def part_2(self) -> int:
         with self.open_input() as file:
             content = file.read()
-            numbers = parse_numbers(content)
-            symbols = parse_symbols(content)
+            numbers, symbols = parse_objects(content)
 
             ratios_sum = 0
             for symbol in symbols:
-                adjacent = get_adjacent_cordinates(symbol.start)
+                adjacent_symbols = get_adjacent_cordinates(symbol.start)
 
-                adjacent_numbers = set()
-                for number in numbers:
-                    for indice in number.indices:
-                        if indice in adjacent:
-                            adjacent_numbers.add(number)
+                adjacent_numbers = set(
+                    number
+                    for number in numbers
+                    for indice in number.indices
+                    if indice in adjacent_symbols
+                )  # Find all numbers adjacent to symbol
 
                 if len(adjacent_numbers) == 2:
                     adjacent_numbers_list = list(adjacent_numbers)
-                    gear_ratio = (
-                        adjacent_numbers_list[0].value * adjacent_numbers_list[1].value
+                    gear_ratio = int(adjacent_numbers_list[0].value) * int(
+                        adjacent_numbers_list[1].value
                     )
                     ratios_sum += gear_ratio
 

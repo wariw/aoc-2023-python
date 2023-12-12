@@ -24,7 +24,7 @@ class Day12(Aoc):
             condition_records = file.read().splitlines()
 
             total_combinations = 0
-            for index, record in enumerate(condition_records):
+            for record in condition_records:
                 data, nums = record.split(" ")
                 nums = tuple(int(num) for num in nums.split(","))
 
@@ -33,33 +33,32 @@ class Day12(Aoc):
 
                 total_combinations += count_combinations(data, nums)
 
-                print(f"{index + 1} of {len(condition_records)}")
-
         return total_combinations
 
 
 @cache
-def count_combinations(data: str, nums: tuple[int]) -> int:
+def count_combinations(data: str, sizes: tuple[int]) -> int:
     characters = len(data)
-    number = nums[0]
+    number = sizes[0]
 
     counter = 0
-    if len(nums) > 1:
+    if len(sizes) > 1:
         for index in range(characters):
-            sequence = "".join(repeat(".", index)) + "".join(repeat("#", number)) + "."
+            sequence = "." * index + "#" * number + "."
+
+            data_left = data[len(sequence) :]
+            sizes_left = sizes[1:]
+
+            if len(data_left) < sum(sizes_left) + len(sizes_left) - 1:
+                break
 
             if not is_sequence_valid(sequence, data[: len(sequence)]):
                 continue
 
-            data_left = data[len(sequence) :]
-            counter += count_combinations(data_left, nums[1:])
+            counter += count_combinations(data_left, sizes[1:])
     else:
         for index in range(characters - number + 1):
-            sequence = (
-                "".join(repeat(".", index))
-                + "".join(repeat("#", number))
-                + "".join(repeat(".", characters - number - index))
-            )
+            sequence = "." * index + "#" * number + "." * (characters - number - index)
             if not is_sequence_valid(sequence, data):
                 continue
 

@@ -1,19 +1,8 @@
 import re
-from enum import Enum
 from typing import Optional
 
 from ._common import Aoc
-from .tools.cordinates import Cordinate, get_adjacent_cordinates
-
-
-class Direction(Enum):
-    """Direction diff values."""
-
-    UP = Cordinate(-1, 0)
-    DOWN = Cordinate(1, 0)
-    LEFT = Cordinate(0, -1)
-    RIGHT = Cordinate(0, 1)
-
+from .tools.cordinates import Cordinate, Direction, get_adjacent_cordinates
 
 cordinates_map = {
     "-": {Direction.LEFT, Direction.RIGHT},

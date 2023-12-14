@@ -1,6 +1,6 @@
 from pytest import mark
 
-from aoc.day_4.day_4 import parse_card
+from aoc.day_4 import parse_card
 
 
 @mark.parametrize(

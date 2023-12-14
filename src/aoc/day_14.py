@@ -1,5 +1,6 @@
 from collections import defaultdict
-from typing import Hashable, Optional
+from enum import auto, Enum, StrEnum
+from typing import cast, Hashable, Optional
 
 from aoc.tools.cordinates import Direction
 from ._common import Aoc
@@ -20,55 +21,86 @@ class Day14(Aoc):
             repetitions_finder = RepetitionFinder()
             iterations = 1000000000
 
-            for index in range(iterations):
+            for _ in range(iterations):
                 old_platform = str(platform)
 
                 platform = _spin_cycle(platform)
 
-                repetitions_finder.add_hash(old_platform, platform)
+                repetitions_finder.add_element(old_platform, platform)
 
                 if repetitions_finder.repetition:
                     repetition_start, repetitions = repetitions_finder.repetition
-                    final_pattern_index = (iterations - repetition_start - 1) % len(repetitions)
+                    final_pattern_index = (iterations - repetition_start - 1) % len(
+                        repetitions
+                    )
                     final_valley = repetitions[final_pattern_index]
+                    final_valley = cast(str, final_valley)
                     platform = _spin_cycle(final_valley)
                     break
 
         return calculate_load(platform)
 
 
+class Stone(StrEnum):
+    """Type of stone."""
+
+    ROUND = "O"
+    SQUARE = "#"
+
+
 class RepetitionFinder:
-    """Repeating patterns finder."""
+    """Searches for repeating patterns."""
+
+    class _FinderState(Enum):
+        INIT = auto()
+        PATTERN = auto()
+        FINISHED = auto()
 
     def __init__(self):
-        self._hash_map: dict[Hashable, list[Hashable]] = defaultdict(list)
-        self._repetition_map: list[Hashable] = []
-        self._started = False
+        self._graph: dict[Hashable, list[Hashable]] = defaultdict(list)
+        self._state: RepetitionFinder._FinderState = RepetitionFinder._FinderState.INIT
+        self._pattern_started = False
         """Indicates that repeating pattern started."""
-
-    def add_hash(self, key: Hashable, value: Hashable):
-        """Ads hashable item to hash map while looking for repetitions."""
-
-        self._hash_map[key].append(value)
-
-        twos = len(list(filter(lambda x: len(x) == 2, self._hash_map.values())))
-        threes = len(list(filter(lambda x: len(x) == 3, self._hash_map.values())))
-
-        if twos == 1 and not threes:
-            self._started = True
-
-        if twos and threes == 1:
-            self._started = False
-
-        if self._started:
-            self._repetition_map.append(key)
 
     @property
     def repetition(self) -> Optional[tuple[int, list[Hashable]]]:
         """Repetition start and repeating pattern or `None` if no repetition was found."""
 
-        if self._repetition_map and not self._started:
-            return len(list(filter(lambda x: len(x) == 1, self._hash_map.values()))), self._repetition_map
+        if self._state is RepetitionFinder._FinderState.FINISHED:
+            return (
+                len(self._get_vertex_by_repetitions(1)),
+                self._get_vertex_by_repetitions(3) + self._get_vertex_by_repetitions(2),
+            )
+
+        return None
+
+    def add_element(self, vertex: Hashable, element: Hashable):
+        """Adds hashable item to graph while looking for repetitions."""
+
+        if self._state is RepetitionFinder._FinderState.FINISHED:
+            raise RuntimeError("Patter detection already complete.")
+
+        self._graph[vertex].append(element)
+
+        twos = len(self._get_vertex_by_repetitions(2))
+        threes = len(self._get_vertex_by_repetitions(3))
+
+        if twos == 1 and not threes:
+            # Pattern starts when vertex with more than one repetiton shows up
+            self._pattern_started = True
+
+        if twos and threes == 1:
+            # Pattern ends when first vertex with three repetitions shows up
+            self._state = RepetitionFinder._FinderState.FINISHED
+
+    def _get_vertex_by_repetitions(self, repetitions: int) -> list[Hashable]:
+        """Returns vertices with specified number of repetitions."""
+
+        return [
+            vertex
+            for vertex, elements in self._graph.items()
+            if len(elements) == repetitions
+        ]
 
 
 def tilt_platform(platform: str, direction: Direction) -> str:
@@ -83,39 +115,39 @@ def tilt_platform(platform: str, direction: Direction) -> str:
 
     """
     rows = platform.splitlines()
-    chars = ["O", "."]
 
     if direction.is_vertical():
         rows = ["".join(row) for row in zip(*rows)]
 
-    if direction in {Direction.RIGHT, Direction.DOWN}:
-        chars.reverse()
-
-    new_rows = []
-    for row in rows:
-        groups = row.split("#")
-        new_row = "#".join(chars[0] * group.count(chars[0]) + chars[1] * group.count(chars[1]) for group in groups)
-        new_rows.append(new_row)
+    tilted_rows = [
+        Stone.SQUARE.join(
+            "".join(
+                sorted(
+                    group, reverse=direction not in {Direction.RIGHT, Direction.DOWN}
+                )
+            )
+            for group in row.split(Stone.SQUARE)
+        )
+        for row in rows
+    ]  # Splits rows by # and sorts remaining characters to achieve tiling effect.
 
     if direction.is_vertical():
-        new_rows = ["".join(row) for row in zip(*new_rows)]
+        tilted_rows = ["".join(row) for row in zip(*tilted_rows)]
 
-    return "\n".join(new_rows)
+    return "\n".join(tilted_rows)
 
 
-def calculate_load(platform: str):
+def calculate_load(platform: str) -> int:
     """Calculates load on platform."""
 
-    lines = platform.splitlines()
-    size = len(lines)
-
-    return sum([(size - index) * row.count("O") for index, row in enumerate(lines)])
+    return sum(
+        (index + 1) * row.count(Stone.ROUND)
+        for index, row in enumerate(reversed(platform.splitlines()))
+    )
 
 
 def _spin_cycle(platform: str) -> str:
-    platform = tilt_platform(platform, Direction.UP)
-    platform = tilt_platform(platform, Direction.LEFT)
-    platform = tilt_platform(platform, Direction.DOWN)
-    platform = tilt_platform(platform, Direction.RIGHT)
+    for direction in (Direction.UP, Direction.LEFT, Direction.DOWN, Direction.RIGHT):
+        platform = tilt_platform(platform, direction)
 
     return platform

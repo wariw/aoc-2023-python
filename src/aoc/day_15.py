@@ -1,4 +1,5 @@
 from collections import defaultdict, OrderedDict
+from functools import reduce
 
 from ._common import Aoc
 
@@ -40,11 +41,6 @@ class Day15(Aoc):
 def calculate_hash(text: str) -> int:
     """Calculates hash for given string."""
 
-    current_value = 0
-
-    for char in text:
-        current_value += ord(char)
-        current_value *= 17
-        current_value %= 256
-
-    return current_value
+    return reduce(
+        lambda value, new_value: ((value + ord(new_value)) * 17) % 256, text, 0
+    )

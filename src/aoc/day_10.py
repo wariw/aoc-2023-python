@@ -2,7 +2,7 @@ import re
 from typing import Optional
 
 from ._common import Aoc
-from .tools.cordinates import Cordinate, Direction, get_adjacent_cordinates
+from .tools.coordinates import Coordinate, Direction, get_adjacent_cordinates
 
 cordinates_map = {
     "-": {Direction.LEFT, Direction.RIGHT},
@@ -25,7 +25,7 @@ class Traveler:
     """Helper class for maze traversing."""
 
     def __init__(
-        self, maze_map_rows: list[str], start: Cordinate, previous: Cordinate
+        self, maze_map_rows: list[str], start: Coordinate, previous: Coordinate
     ) -> None:
         self._maze_map_rows = maze_map_rows
         self._current = start
@@ -33,7 +33,7 @@ class Traveler:
         self._steps = 0
 
     @property
-    def position(self) -> Cordinate:
+    def position(self) -> Coordinate:
         """Current position."""
 
         return self._current
@@ -118,7 +118,7 @@ class Day10(Aoc):
                 line = line.replace("S", start_symbol)
 
                 for position, char in enumerate(line):
-                    current_cordinate = Cordinate(row, position)
+                    current_cordinate = Coordinate(row, position)
 
                     if current_cordinate in positions:
                         # Maze side is changed based on bends and | changes.
@@ -144,11 +144,11 @@ class Day10(Aoc):
         return inside_objects
 
 
-def _find_start(maze_map_rows: list[str]) -> Cordinate:
+def _find_start(maze_map_rows: list[str]) -> Coordinate:
     for row, line in enumerate(maze_map_rows):
         start = re.search(r"S", line)
         if start:
-            start_cordinate = Cordinate(row, start.start())
+            start_cordinate = Coordinate(row, start.start())
 
             return start_cordinate
 
@@ -156,8 +156,8 @@ def _find_start(maze_map_rows: list[str]) -> Cordinate:
 
 
 def _find_starting_cordinates(
-    maze_map_rows: list[str], start_cordinate: Cordinate, possible_paths: set[Cordinate]
-) -> list[Cordinate]:
+    maze_map_rows: list[str], start_cordinate: Coordinate, possible_paths: set[Coordinate]
+) -> list[Coordinate]:
     starting_cordinates = []
     for possible_path in possible_paths:
         direction = Direction(possible_path - start_cordinate)

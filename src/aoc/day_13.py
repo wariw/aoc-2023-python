@@ -1,6 +1,6 @@
 from typing import Optional
 
-from aoc.tools.cordinates import Cordinate
+from aoc.tools.coordinates import Coordinate
 
 from ._common import Aoc
 
@@ -46,7 +46,7 @@ class Day13(Aoc):
 
 def check_for_reflection(
     index: int, rows: list[str], fix_smudge: bool = False
-) -> tuple[bool, Optional[Cordinate]]:
+) -> tuple[bool, Optional[Coordinate]]:
     """Checks if reflections occurs at given index.
 
     Args:
@@ -55,7 +55,7 @@ def check_for_reflection(
         fix_smudge (bool, optional): Decides if smudged mirors should be fixed. Defaults to False.
 
     Returns:
-        tuple[bool, Optional[Cordinate]]: Reflection status and cordinate of fixed mirror.
+        tuple[bool, Optional[Coordinate]]: Reflection status and cordinate of fixed mirror.
 
     """
     current_row = index
@@ -77,7 +77,7 @@ def check_for_reflection(
                     if a != b
                 ]
                 if len(diff) == 1:
-                    smudge_replaced = Cordinate(current_row - i, diff[0])
+                    smudge_replaced = Coordinate(current_row - i, diff[0])
                     reflection = True
                     continue
 

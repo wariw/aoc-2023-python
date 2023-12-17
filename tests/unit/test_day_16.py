@@ -1,7 +1,7 @@
 from pytest import mark
 
 from aoc.day_16 import calculate_directions, Obstacle
-from aoc.tools.cordinates import Direction
+from aoc.tools.coordinates import Direction
 
 @mark.parametrize(
     "beam_direction, obstacle, new_direction",

@@ -2,7 +2,7 @@ from collections import defaultdict
 from enum import auto, Enum, StrEnum
 from typing import cast, Hashable, Optional
 
-from aoc.tools.cordinates import Direction
+from aoc.tools.coordinates import Direction
 from ._common import Aoc
 
 

@@ -1,6 +1,6 @@
 from pytest import mark
 
-from aoc.tools.cordinates import Direction
+from aoc.tools.coordinates import Direction
 
 
 @mark.parametrize("direction,opposite", (

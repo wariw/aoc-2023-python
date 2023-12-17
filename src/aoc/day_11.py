@@ -1,7 +1,7 @@
 import re
 from itertools import combinations
 
-from .tools.cordinates import Cordinate
+from .tools.coordinates import Coordinate
 from ._common import Aoc
 
 
@@ -34,12 +34,12 @@ class Day11(Aoc):
 
 
 def expand_cordinates(
-    galaxies: list[Cordinate], universe_map: str, factor: int = 2
-) -> list[Cordinate]:
+    galaxies: list[Coordinate], universe_map: str, factor: int = 2
+) -> list[Coordinate]:
     """Expands cordinates according to universe map and factor.
 
     Args:
-        galaxies (list[Cordinate]): Cordinates of galaxies to be expanded.
+        galaxies (list[Coordinate]): Cordinates of galaxies to be expanded.
         universe_map (str): Map of universe.
         factor (int, optional): Expansion factor. Defaults to 2.
 
@@ -66,7 +66,7 @@ def expand_cordinates(
         )
         expansion = factor - 1
 
-        cordinate = Cordinate(
+        cordinate = Coordinate(
             cordinate.position + expanded_col_counts * expansion,
             cordinate.row + expanded_row_counts * expansion,
         )
@@ -75,14 +75,14 @@ def expand_cordinates(
     return expanded_galaxies
 
 
-def find_galaxies(universe_map: str) -> list[Cordinate]:
+def find_galaxies(universe_map: str) -> list[Coordinate]:
     """Find galaxies in universe map.
 
     Args:
         galaxy (str): Map of universe.
 
     Returns:
-        list[Cordinate]: Galaxies.
+        list[Coordinate]: Galaxies.
 
     """
     cordinates = []
@@ -91,18 +91,18 @@ def find_galaxies(universe_map: str) -> list[Cordinate]:
         matches = re.finditer(r"#", galaxy_row)
 
         for match in matches:
-            cordinate = Cordinate(row, match.start())
+            cordinate = Coordinate(row, match.start())
             cordinates.append(cordinate)
 
     return cordinates
 
 
-def manhattan_distance(start: Cordinate, finish: Cordinate) -> int:
+def manhattan_distance(start: Coordinate, finish: Coordinate) -> int:
     """Calculates manhattan distance between two cordinates.
 
     Args:
-        start (Cordinate): Start cordinate.
-        finish (Cordinate): Finish cordinate.
+        start (Coordinate): Start cordinate.
+        finish (Coordinate): Finish cordinate.
 
     Returns:
         int: Path length.

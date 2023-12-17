@@ -1,4 +1,4 @@
-"""Helpers for cordinate based tasks."""
+"""Helpers for coordinate based tasks."""
 
 from dataclasses import dataclass
 from enum import Enum
@@ -7,14 +7,14 @@ from typing import Self
 
 
 @dataclass(frozen=True)
-class Cordinate:
-    """Single cordinate."""
+class Coordinate:
+    """Single coordinate."""
 
     row: int
     position: int
 
     def __add__(self, other: Self) -> Self:
-        return Cordinate(self.row + other.row, self.position + other.position)
+        return Coordinate(self.row + other.row, self.position + other.position)
 
     def __eq__(self, other: Self) -> bool:
         return self.row == other.row and self.position == other.position
@@ -25,19 +25,19 @@ class Cordinate:
 
     @__mul__.register
     def _(self, other: int) -> Self:
-        return Cordinate(self.row * other, self.position * other)
+        return Coordinate(self.row * other, self.position * other)
 
     def __sub__(self, other: Self) -> Self:
-        return Cordinate(self.row - other.row, self.position - other.position)
+        return Coordinate(self.row - other.row, self.position - other.position)
 
 
 class Direction(Enum):
     """Direction diff values."""
 
-    UP = Cordinate(-1, 0)
-    DOWN = Cordinate(1, 0)
-    LEFT = Cordinate(0, -1)
-    RIGHT = Cordinate(0, 1)
+    UP = Coordinate(-1, 0)
+    DOWN = Coordinate(1, 0)
+    LEFT = Coordinate(0, -1)
+    RIGHT = Coordinate(0, 1)
 
     @property
     def opposite(self) -> Self:
@@ -51,16 +51,16 @@ class Direction(Enum):
 
     def rotate(self, clockwise: bool = True):
         if clockwise:
-            return Direction(Cordinate(self.value.position, self.value.row * -1))
+            return Direction(Coordinate(self.value.position, self.value.row * -1))
 
-        return Direction(Cordinate(self.value.position * -1, self.value.row))
+        return Direction(Coordinate(self.value.position * -1, self.value.row))
 
 
-def get_adjacent_cordinates(cordinate: Cordinate, diagonal: bool = True) -> set[Cordinate]:
-    """Returns cordinates adjacent to specified cordinate."""
+def get_adjacent_cordinates(coordinate: Coordinate, diagonal: bool = True) -> set[Coordinate]:
+    """Returns coordinates adjacent to specified coordinate."""
 
     return set(
-        Cordinate(cordinate.row + row, cordinate.position + position)
+        Coordinate(coordinate.row + row, coordinate.position + position)
         for row in (-1, 0, 1)
         for position in (-1, 0, 1)
         if (row != 0 or position != 0)

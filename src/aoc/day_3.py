@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass
 
 from ._common import Aoc
-from .tools.cordinates import Cordinate, get_adjacent_cordinates
+from .tools.coordinates import Coordinate, get_adjacent_cordinates
 
 
 @dataclass(frozen=True, eq=True)
@@ -10,15 +10,15 @@ class CordinateObject:
     """Cordinated object."""
 
     value: str
-    start: Cordinate
+    start: Coordinate
     span: int
 
     @property
-    def indices(self) -> list[Cordinate]:
+    def indices(self) -> list[Coordinate]:
         """Indices occupied by object."""
 
         return [
-            Cordinate(self.start.row, self.start.position + index)
+            Coordinate(self.start.row, self.start.position + index)
             for index in range(self.span)
         ]
 
@@ -41,7 +41,7 @@ def parse_objects(parts_map: str) -> tuple[set[CordinateObject], set[CordinateOb
         for match in re.finditer(r"(?!\.)\W|\d+", map_row):
             cordinate = CordinateObject(
                 match.group(),
-                Cordinate(row_index, match.start()),
+                Coordinate(row_index, match.start()),
                 match.end() - match.start(),
             )
             try:

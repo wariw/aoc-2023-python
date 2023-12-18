@@ -24,13 +24,9 @@ class Day16(Aoc):
 
             start = Coordinate(0, -1)
 
-            propagated = set()
-            beams = propagate_beam(start, Direction.RIGHT, mirrors_map, propagated)
+            beams = propagate_beam(start, Direction.RIGHT, mirrors_map, set())
 
-            energized_tiles = set()
-            for beam in beams:
-                for tiles in beam.coordinates:
-                    energized_tiles.add(tiles)
+            energized_tiles = set(coordinate for beam in beams for coordinate in beam.coordinates)
             energized_tiles.remove(start)
 
         return len(energized_tiles)
@@ -54,13 +50,9 @@ class Day16(Aoc):
                 for coordinates, direction in [right, left, down, up]
                 for coordinate in iter(coordinates)
             ]:
-                propagated = set()
-                beams = propagate_beam(start, direction, mirrors_map, propagated)
+                beams = propagate_beam(start, direction, mirrors_map, set())
 
-                energized_tiles = set()
-                for beam in beams:
-                    for tiles in beam.coordinates:
-                        energized_tiles.add(tiles)
+                energized_tiles = set(coordinate for beam in beams for coordinate in beam.coordinates)
                 energized_tiles.remove(start)
 
                 all_energized_tiles.append(len(energized_tiles))

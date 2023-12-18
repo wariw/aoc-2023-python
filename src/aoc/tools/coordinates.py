@@ -27,6 +27,9 @@ class Coordinate:
     def _(self, other: int) -> Self:
         return Coordinate(self.row * other, self.position * other)
 
+    def __repr__(self):
+        return f"({self.row}, {self.position})"
+
     def __sub__(self, other: Self) -> Self:
         return Coordinate(self.row - other.row, self.position - other.position)
 
@@ -38,6 +41,17 @@ class Direction(Enum):
     DOWN = Coordinate(1, 0)
     LEFT = Coordinate(0, -1)
     RIGHT = Coordinate(0, 1)
+
+    def __repr__(self):
+        match self:
+            case Direction.UP:
+                return "↑"
+            case Direction.DOWN:
+                return "↓"
+            case Direction.LEFT:
+                return "←"
+            case Direction.RIGHT:
+                return "→"
 
     @property
     def opposite(self) -> Self:
